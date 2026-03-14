@@ -191,7 +191,7 @@ const Preloader = ({ progress }) => (
         className="text-[9px] tracking-[4px] uppercase mb-7"
         style={{ color: "rgba(0,212,255,0.6)" }}
       >
-        Cybersecurity · Fullstack Dev
+        Python developer
       </motion.div>
  
       {/* Terminal block */}
