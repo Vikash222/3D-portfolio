@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  /* Naye colors ko CSS variables mein define karein */
+  --color-mirage-deep: #141E30;
+  --color-mirage-light: #35577D;
+}
+
+@layer base {
+  body {
+    /* Pure Black (#000) ko Navy Mirage se replace kiya */
+    background-color: #141E30; 
+    color: #E0E6ED;
+    margin: 0;
+    font-family: sans-serif;
+  }
+}
