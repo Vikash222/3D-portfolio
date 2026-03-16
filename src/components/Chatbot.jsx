@@ -279,7 +279,7 @@ BEHAVIOR RULES
                 </div>
                 <div className="px-2 py-0.5 rounded-full font-bold uppercase tracking-widest"
                   style={{ fontSize:9, background:'rgba(249,115,22,0.15)', color:'rgba(249,115,22,0.9)', border:'1px solid rgba(249,115,22,0.3)' }}>
-                  Groq ⚡
+                  AI
                 </div>
                 <button onClick={() => setIsOpen(false)}
                   className="ml-1 p-1 rounded-lg transition-colors hover:bg-white/5"
