@@ -14,6 +14,14 @@ const Projects = () => {
 
   const projects = [
     {
+      title: "smart-booking-system",
+      cat: "Web Application",
+      img: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=500",
+      github: "https://github.com/Vikash222/smart-booking-system",
+      live: "https://smart-booking-system-2bcc9.web.app/",
+      desc: "Web based application to create professional resumes and personal portfolios quickly."
+    },
+    {
       title: "AI IVR Call Assistant",
       cat: "AI / Python",
       img: "https://images.unsplash.com/photo-1589254065878-42c9da997008?q=80&w=500",
@@ -29,14 +37,7 @@ const Projects = () => {
       live: "#",
       desc: "AI powered resume builder that helps generate ATS friendly resumes and portfolios."
     },
-    {
-      title: "smart-booking-system",
-      cat: "Web Application",
-      img: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=500",
-      github: "https://github.com/Vikash222/smart-booking-system",
-      live: "https://smart-booking-system-2bcc9.web.app/",
-      desc: "Web based application to create professional resumes and personal portfolios quickly."
-    },
+    
     {
       title: "Vite React Project",
       cat: "Frontend Development",
