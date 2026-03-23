@@ -104,7 +104,7 @@ const Hero = () => {
                 Hi, <br />I'm <span className="text-[#35577D] font-bold">Vikash</span>
               </h1>
               <p className="text-xl md:text-2xl mt-4 text-gray-400 font-light tracking-wide">
-                Python Developer & <br /> IOS Deployment Learner
+                Full-Stack Developer | Python Enthusiast | iOS Explorer
               </p>
             </motion.div>
 <a href="#contact">
@@ -226,11 +226,11 @@ const Hero = () => {
                 </h3>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed">
-               Actively looking for a Development Internship.
+               Actively looking for a Development Internship. <br></br>Full-Stack Developer
 Python Developer | Exploring iOS Development
               </p>
              <a
-  href="https://drive.google.com/file/d/1subtxcmGnS5KsposfPJG9ymG9SX-AZvR/view?usp=sharing"
+  href="https://drive.google.com/file/d/1H72SMGMsGUIPGRen11BQ0EroYX28RodC/view?usp=sharing"
   target="_blank"
   className="flex items-center gap-2 text-[#35577D] font-bold text-sm border-b-2 border-[#35577D] pb-1 hover:text-white hover:border-white transition-all"
 > <button>
