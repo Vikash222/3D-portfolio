@@ -564,6 +564,17 @@ export default function MessagesView({ initialSelectedMessage = null }) {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-bold text-white text-sm">{msg.name}</span>
                           <span className="text-xs text-slate-400">&bull; {msg.email}</span>
+                          {msg.phone && (
+                            <a
+                              href={`tel:${msg.phone}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded-md hover:bg-emerald-900/50 transition-colors"
+                              title="Call Client"
+                            >
+                              <Phone className="w-3 h-3" />
+                              {msg.phone}
+                            </a>
+                          )}
                           {!msg.is_read && (
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                               UNREAD
@@ -672,6 +683,12 @@ export default function MessagesView({ initialSelectedMessage = null }) {
                         )}
                       </div>
                       <p className="text-[11px] text-slate-400 truncate mt-0.5 font-mono">{c.user?.email}</p>
+                      {c.user?.phone && (
+                        <p className="text-[10px] text-emerald-400 truncate mt-0.5 font-mono flex items-center gap-1">
+                          <Phone className="w-2.5 h-2.5" />
+                          {c.user.phone}
+                        </p>
+                      )}
                       <span className="text-[10px] text-slate-500 font-mono mt-1 block">
                         {c.last_message_at ? new Date(c.last_message_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                       </span>
@@ -687,11 +704,35 @@ export default function MessagesView({ initialSelectedMessage = null }) {
             {selectedConversation ? (
               <>
                 {/* Chat Topbar */}
-                <div className="p-4 bg-slate-900/80 border-b border-white/10 flex items-center justify-between">
+                <div className="p-4 bg-slate-900/80 border-b border-white/10 flex items-center justify-between gap-3 flex-wrap">
                   <div>
-                    <h4 className="font-bold text-white text-sm">
-                      {selectedConversation.user?.name || 'Client'}
-                    </h4>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="font-bold text-white text-sm">
+                        {selectedConversation.user?.name || 'Client'}
+                      </h4>
+                      {selectedConversation.user?.phone && (
+                        <div className="flex items-center gap-1.5">
+                          <a
+                            href={`tel:${selectedConversation.user.phone}`}
+                            className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full hover:bg-emerald-900 transition-colors"
+                            title="Call Client"
+                          >
+                            <Phone className="w-3 h-3" />
+                            {selectedConversation.user.phone}
+                          </a>
+                          <a
+                            href={`https://wa.me/${selectedConversation.user.phone.replace(/[^0-9]/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full hover:bg-emerald-900 transition-colors"
+                            title="WhatsApp Client"
+                          >
+                            <MessageCircle className="w-3 h-3" />
+                            WhatsApp
+                          </a>
+                        </div>
+                      )}
+                    </div>
                     <p className="text-xs text-slate-400 font-mono">{selectedConversation.user?.email}</p>
                   </div>
                   <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
@@ -997,20 +1038,46 @@ export default function MessagesView({ initialSelectedMessage = null }) {
                             {req.user?.name ? req.user.name.charAt(0) : 'C'}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <strong className="text-white block truncate">{req.user?.name || 'Client'}</strong>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <strong className="text-white block truncate">{req.user?.name || 'Client'}</strong>
+                              {req.user?.phone && (
+                                <a
+                                  href={`tel:${req.user.phone}`}
+                                  className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-1.5 py-0.5 rounded-md hover:bg-emerald-900 transition-colors"
+                                  title="Call Client"
+                                >
+                                  <Phone className="w-2.5 h-2.5" />
+                                  {req.user.phone}
+                                </a>
+                              )}
+                            </div>
                             <span className="text-[11px] text-slate-400 font-mono truncate block">
                               {req.user?.email}
                             </span>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => handleOpenClientChatFromRequest(req.user)}
-                            className="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/30 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0"
-                            title="Open 1-on-1 Live Chat with this client"
-                          >
-                            <MessageCircle className="w-3.5 h-3.5" />
-                            <span>Chat</span>
-                          </button>
+                          <div className="flex items-center gap-1 shrink-0">
+                            {req.user?.phone && (
+                              <a
+                                href={`https://wa.me/${req.user.phone.replace(/[^0-9]/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-400/30 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                title="WhatsApp Client"
+                              >
+                                <MessageCircle className="w-3 h-3" />
+                                <span>WA</span>
+                              </a>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleOpenClientChatFromRequest(req.user)}
+                              className="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/30 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                              title="Open 1-on-1 Live Chat with this client"
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              <span>Chat</span>
+                            </button>
+                          </div>
                         </div>
 
                         {/* Chosen Template preview (if attached) */}
@@ -1280,16 +1347,52 @@ export default function MessagesView({ initialSelectedMessage = null }) {
                   <h4 className="text-sm font-bold text-white">
                     {selectedProjectModal.user?.name || 'Registered Client'}
                   </h4>
-                  <a
-                    href={`mailto:${selectedProjectModal.user?.email}`}
-                    className="text-xs text-cyan-400 hover:underline font-mono"
-                  >
-                    {selectedProjectModal.user?.email}
-                  </a>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <a
+                      href={`mailto:${selectedProjectModal.user?.email}`}
+                      className="text-xs text-cyan-400 hover:underline font-mono"
+                    >
+                      {selectedProjectModal.user?.email}
+                    </a>
+                    {selectedProjectModal.user?.phone && (
+                      <>
+                        <span className="text-xs text-slate-500 font-mono">&bull;</span>
+                        <a
+                          href={`tel:${selectedProjectModal.user.phone}`}
+                          className="text-xs text-emerald-400 hover:underline font-mono inline-flex items-center gap-1"
+                        >
+                          <Phone className="w-3 h-3" />
+                          {selectedProjectModal.user.phone}
+                        </a>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                {selectedProjectModal.user?.phone && (
+                  <>
+                    <a
+                      href={`tel:${selectedProjectModal.user.phone}`}
+                      className="px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all"
+                      title="Call Client Phone"
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      <span>Call</span>
+                    </a>
+                    <a
+                      href={`https://wa.me/${selectedProjectModal.user.phone.replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-400/30 text-xs font-bold flex items-center gap-1.5 transition-all"
+                      title="Chat on WhatsApp"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>WhatsApp</span>
+                    </a>
+                  </>
+                )}
                 <button
                   type="button"
                   onClick={() => {
@@ -1299,7 +1402,7 @@ export default function MessagesView({ initialSelectedMessage = null }) {
                   }}
                   className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 cursor-pointer transition-all"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageSquare className="w-4 h-4" />
                   <span>Open 1-on-1 Chat</span>
                 </button>
               </div>
@@ -1633,9 +1736,32 @@ export default function MessagesView({ initialSelectedMessage = null }) {
                 </div>
               </div>
               {selectedMessage.phone && (
-                <div className="text-xs text-slate-300 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Phone: {selectedMessage.phone}</span>
+                <div className="text-xs text-slate-300 flex items-center gap-2 flex-wrap">
+                  <span className="flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Phone:</span>
+                    <a
+                      href={`tel:${selectedMessage.phone}`}
+                      className="text-emerald-400 font-mono hover:underline font-semibold"
+                    >
+                      {selectedMessage.phone}
+                    </a>
+                  </span>
+                  <a
+                    href={`tel:${selectedMessage.phone}`}
+                    className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-md hover:bg-emerald-900 transition-colors"
+                  >
+                    Call
+                  </a>
+                  <a
+                    href={`https://wa.me/${selectedMessage.phone.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-md hover:bg-emerald-900 transition-colors"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                    WhatsApp
+                  </a>
                 </div>
               )}
               {selectedMessage.ip_address && (

@@ -810,7 +810,7 @@ export default function App() {
             setIsEditorDrawerOpen(true);
           }}
         >
-          <ContactSection profile={profile} />
+          <ContactSection profile={profile} loggedInUser={clientUser || user} />
         </LiveVisualSectionWrapper>
       </main>
 

@@ -25,12 +25,14 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:150',
             'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|max:25',
             'password' => 'required|string|min:6',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'phone' => $validated['phone'],
             'password' => Hash::make($validated['password']),
             'role' => 'client',
         ]);
@@ -43,6 +45,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'phone' => $user->phone,
                 'role' => 'client',
                 'two_factor_enabled' => false,
             ],
@@ -203,6 +206,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'phone' => $user->phone,
                 'role' => $user->role ?? 'client',
                 'two_factor_enabled' => $user->hasEnabledTwoFactor(),
             ],
@@ -291,6 +295,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'phone' => $user->phone,
                 'role' => $user->role ?? 'client',
                 'two_factor_enabled' => $user->hasEnabledTwoFactor(),
                 'created_at' => $user->created_at,

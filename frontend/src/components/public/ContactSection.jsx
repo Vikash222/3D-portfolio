@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { Send, Mail, Phone, MapPin, CheckCircle, AlertCircle, Sparkles, MessageCircle } from 'lucide-react';
 import { GithubIcon, LinkedinIcon, TwitterIcon, InstagramIcon } from '../common/Icons';
@@ -6,7 +6,7 @@ import { submitContactForm } from '../../services/api';
 import { useVisualEditor } from '../../context/VisualEditorContext';
 import InlineText from '../editor/InlineText';
 
-export default function ContactSection({ profile }) {
+export default function ContactSection({ profile, loggedInUser = null }) {
   const { updateProfileField, updateAboutDetail, isEditMode, isPreviewMode } = useVisualEditor();
 
   const [formData, setFormData] = useState({
@@ -16,6 +16,29 @@ export default function ContactSection({ profile }) {
     subject: '',
     message: '',
   });
+
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    let user = loggedInUser;
+    if (!user) {
+      try {
+        const stored = localStorage.getItem('portfolio_client_user') || localStorage.getItem('portfolio_admin_user');
+        if (stored) user = JSON.parse(stored);
+      } catch (err) {
+        // ignore
+      }
+    }
+    if (user) {
+      setCurrentUser(user);
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || '',
+      }));
+    }
+  }, [loggedInUser]);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -58,9 +81,9 @@ export default function ContactSection({ profile }) {
       }
 
       setFormData({
-        name: '',
-        email: '',
-        phone: '',
+        name: currentUser?.name || '',
+        email: currentUser?.email || '',
+        phone: currentUser?.phone || '',
         subject: '',
         message: '',
       });
@@ -300,6 +323,20 @@ export default function ContactSection({ profile }) {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {currentUser && (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3.5 rounded-xl bg-red-950/40 border border-red-500/30 text-xs">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0 shadow-xs shadow-emerald-400/50" />
+                        <span className="text-slate-200">
+                          Signed in as <strong className="text-white font-semibold">{currentUser.name}</strong> ({currentUser.email})
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono text-emerald-300 font-bold uppercase tracking-wider bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-500/40">
+                        Details Auto-Filled
+                      </span>
+                    </div>
+                  )}
+
                   {errorMessage && (
                     <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-950/50 border border-rose-500/30 text-rose-300 text-sm">
                       <AlertCircle className="w-5 h-5 shrink-0" />

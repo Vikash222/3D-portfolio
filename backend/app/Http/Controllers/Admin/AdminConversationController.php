@@ -20,7 +20,7 @@ class AdminConversationController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $conversations = Conversation::with(['user:id,name,email,created_at'])
+        $conversations = Conversation::with(['user:id,name,email,phone,created_at'])
             ->withCount(['messages as unread_client_messages_count' => function ($q) {
                 $q->where('sender_type', 'client')->where('is_read', false);
             }])
@@ -40,7 +40,7 @@ class AdminConversationController extends Controller
      */
     public function show(Conversation $conversation): JsonResponse
     {
-        $conversation->load(['user:id,name,email', 'messages' => function ($q) {
+        $conversation->load(['user:id,name,email,phone', 'messages' => function ($q) {
             $q->orderBy('created_at', 'asc');
         }]);
 
@@ -196,7 +196,7 @@ class AdminConversationController extends Controller
      */
     public function listProjectRequests(): JsonResponse
     {
-        $requests = ProjectRequest::with(['user:id,name,email', 'templateProject:id,title,category,image_url', 'payments'])
+        $requests = ProjectRequest::with(['user:id,name,email,phone', 'templateProject:id,title,category,image_url', 'payments'])
             ->orderBy('created_at', 'desc')
             ->get();
 

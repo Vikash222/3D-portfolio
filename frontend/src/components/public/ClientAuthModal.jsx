@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, User, ArrowRight, Shield, AlertCircle } from 'lucide-react';
+import { X, Mail, Lock, User, Phone, ArrowRight, Shield, AlertCircle } from 'lucide-react';
 import { login, registerClient } from '../../services/api';
 
 export default function ClientAuthModal({ isOpen, onClose, onAuthSuccess, onSwitchToAdmin }) {
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -20,7 +21,12 @@ export default function ClientAuthModal({ isOpen, onClose, onAuthSuccess, onSwit
     try {
       let res;
       if (isRegister) {
-        res = await registerClient(name, email, password);
+        if (!phone.trim()) {
+          setErrorMessage('Please enter your phone number.');
+          setLoading(false);
+          return;
+        }
+        res = await registerClient(name, email, password, phone);
       } else {
         res = await login(email, password);
       }
@@ -71,22 +77,41 @@ export default function ClientAuthModal({ isOpen, onClose, onAuthSuccess, onSwit
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {isRegister && (
-            <div>
-              <label className="block text-xs font-mono text-slate-300 mb-1 font-semibold">
-                YOUR FULL NAME
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Sarah Jenkins"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-white/10 text-sm text-white focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 placeholder-slate-500"
-                />
+            <>
+              <div>
+                <label className="block text-xs font-mono text-slate-300 mb-1 font-semibold">
+                  YOUR FULL NAME
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Sarah Jenkins"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-white/10 text-sm text-white focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 placeholder-slate-500"
+                  />
+                </div>
               </div>
-            </div>
+
+              <div>
+                <label className="block text-xs font-mono text-slate-300 mb-1 font-semibold">
+                  PHONE NUMBER
+                </label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+91 98765 43210"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-white/10 text-sm text-white focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 placeholder-slate-500"
+                  />
+                </div>
+              </div>
+            </>
           )}
 
           <div>

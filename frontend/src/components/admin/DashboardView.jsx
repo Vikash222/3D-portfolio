@@ -11,6 +11,7 @@ import {
   CheckCircle,
   AlertCircle,
   Edit3,
+  Phone,
 } from 'lucide-react';
 import { getDashboardStats, toggleMessageRead } from '../../services/api';
 
@@ -195,8 +196,14 @@ export default function DashboardView({ onNavigate, onViewMessage, onOpenLiveEdi
                     {msg.name?.charAt(0) || 'U'}
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-bold text-sm text-white">{msg.name}</span>
+                      {msg.phone && (
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-1.5 py-0.5 rounded-md inline-flex items-center gap-1">
+                          <Phone className="w-2.5 h-2.5" />
+                          {msg.phone}
+                        </span>
+                      )}
                       {!msg.is_read && (
                         <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500 text-slate-950 shadow-xs">
                           NEW

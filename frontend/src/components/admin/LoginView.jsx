@@ -14,6 +14,7 @@ import {
   EyeOff,
   Briefcase,
   Terminal,
+  Phone,
 } from 'lucide-react';
 import {
   login,
@@ -33,6 +34,7 @@ export default function LoginView({
   // Form Fields
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -90,6 +92,10 @@ export default function LoginView({
     setErrorMessage('');
     setSuccessMessage('');
 
+    if (!phone.trim()) {
+      setErrorMessage('Please enter your phone number.');
+      return;
+    }
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match. Please re-enter.');
       return;
@@ -101,7 +107,7 @@ export default function LoginView({
 
     setLoading(true);
     try {
-      const res = await registerClient(name, email, password);
+      const res = await registerClient(name, email, password, phone);
       handleAuthDispatch(res.user, res.token);
     } catch (err) {
       setErrorMessage(
@@ -284,22 +290,41 @@ export default function LoginView({
                 className="space-y-4"
               >
                 {tab === 'register' && (
-                  <div className="space-y-1.5">
-                    <label className="block text-[11px] font-mono text-slate-300 font-semibold">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        required
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="John Doe / Jane Client"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-red-400"
-                      />
+                  <>
+                    <div className="space-y-1.5">
+                      <label className="block text-[11px] font-mono text-slate-300 font-semibold">
+                        Full Name
+                      </label>
+                      <div className="relative">
+                        <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          required
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="John Doe / Jane Client"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-red-400"
+                        />
+                      </div>
                     </div>
-                  </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-[11px] font-mono text-slate-300 font-semibold">
+                        Phone Number
+                      </label>
+                      <div className="relative">
+                        <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="tel"
+                          required
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="+91 98765 43210"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-red-400"
+                        />
+                      </div>
+                    </div>
+                  </>
                 )}
 
                 <div className="space-y-1.5">
