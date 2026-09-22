@@ -16,7 +16,6 @@ import {
   FolderGit2,
   Cpu,
 } from 'lucide-react';
-import MobileStoryBar from './MobileStoryBar';
 import { useVisualEditor } from '../../context/VisualEditorContext';
 import InlineText from '../editor/InlineText';
 import InlineImageOverlay from '../editor/InlineImageOverlay';
@@ -94,12 +93,6 @@ export default function HeroSection({ profile, onOpenChat }) {
   return (
     <section id="hero" className="relative min-h-[95vh] flex items-center justify-center pt-28 pb-16 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
-        {/* Mobile Story Highlights Reel (Visible only on mobile devices) */}
-        <MobileStoryBar
-          onOpenChat={onOpenChat}
-          profile={profile}
-        />
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center mt-2 sm:mt-0">
           {/* Left Column: Story & Headline */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
