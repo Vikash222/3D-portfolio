@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install system dependencies & PHP extensions
+# Install system dependencies, libzip & PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -8,10 +8,11 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libsqlite3-dev \
+    libzip-dev \
     zip \
     unzip \
     sqlite3 \
-    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd \
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -28,11 +29,14 @@ RUN a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project code
-COPY . .
+# Copy composer files first
+COPY composer.json composer.lock* ./
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Install PHP dependencies without artisan scripts (scripts execute in entrypoint with runtime env)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Copy remaining application code
+COPY . .
 
 # Set up storage and cache permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database \

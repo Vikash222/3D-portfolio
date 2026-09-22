@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+# Set Apache port to $PORT if provided (e.g. Render uses dynamic PORT)
+if [ -n "$PORT" ]; then
+    sed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf
+    sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:$PORT>/g" /etc/apache2/sites-available/*.conf
+fi
+
+# Ensure .env exists
+if [ ! -f /var/www/html/.env ]; then
+    cp /var/www/html/.env.example /var/www/html/.env
+fi
+
 # Ensure SQLite database exists if DB_CONNECTION is sqlite
 if [ "${DB_CONNECTION:-sqlite}" = "sqlite" ]; then
     mkdir -p /var/www/html/database
@@ -18,6 +29,9 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
+
+# Discover packages with runtime environment loaded
+php artisan package:discover --ansi || true
 
 # Run database migrations
 php artisan migrate --force
