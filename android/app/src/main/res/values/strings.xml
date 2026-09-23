@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Vikash Kumar</string>
+    <string name="launcher_name">Vikash Kumar</string>
+    <string name="host_name">mrvikash.in</string>
+    <string name="default_url">https://mrvikash.in/</string>
+    <string name="asset_statements">
+    [{\n      \"relation\": [\"delegate_permission/common.handle_all_urls\"],\n      \"target\": {\n        \"namespace\": \"android_app\",\n        \"package_name\": \"in.mrvikash.portfolio\",\n        \"sha256_cert_fingerprints\": [\"7E:3D:8F:E8:19:5E:2C:23:C5:BE:06:6A:4B:08:7E:5F:46:11:F4:53:F3:44:63:35:41:20:E6:7E:77:BE:1F:59\"]\n      }\n    }]
+    </string>
+</resources>
