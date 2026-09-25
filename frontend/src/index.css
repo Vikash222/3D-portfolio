@@ -1,144 +1,70 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
-    --bg-primary: #070305;
-    --bg-secondary: #12060b;
-    --bg-card: rgba(18, 8, 14, 0.88);
-    --border-card: rgba(255, 255, 255, 0.12);
-    --accent-red: #ef4444;
-    --accent-crimson: #dc2626;
-    --accent-rose: #f43f5e;
-    --accent-white: #ffffff;
-    --text-heading: #ffffff;
-    --text-body: #f8fafc;
-    --text-muted: #cbd5e1;
+    --background: 40 33% 95%;
+    --foreground: 18 10% 15%;
+    --card: 40 33% 95%;
+    --card-foreground: 18 10% 15%;
+    --popover: 40 33% 95%;
+    --popover-foreground: 18 10% 15%;
+    --primary: 37 64% 61%;
+    --primary-foreground: 18 10% 15%;
+    --secondary: 348 35% 84%;
+    --secondary-foreground: 18 10% 15%;
+    --muted: 40 20% 90%;
+    --muted-foreground: 18 10% 40%;
+    --accent: 132 12% 57%;
+    --accent-foreground: 18 10% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 348 35% 84%;
+    --input: 348 35% 84%;
+    --ring: 37 64% 61%;
+    --radius: 0.5rem;
   }
 
   * {
-    box-sizing: border-box;
-    scroll-behavior: smooth;
+    border-color: hsl(var(--border));
   }
 
   body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--bg-primary);
-    color: var(--text-body);
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    overflow-x: hidden;
-    selection-background-color: #dc2626;
-    selection-color: #ffffff;
+    background-color: #F9F6F0;
+    color: #2D2926;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Luxury scrollbar */
-  ::-webkit-scrollbar {
-    width: 7px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #080204;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #2b0e16;
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #ef4444;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
   }
 }
 
-/* Luxury Cosmic Frosted Card Utility */
-.glass-panel {
-  background: rgba(18, 8, 14, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F9F6F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #DDA75B;
+  border-radius: 4px;
 }
 
-.glass-panel-hover {
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.glass-panel-hover:hover {
-  background: rgba(26, 10, 18, 0.95);
-  border-color: rgba(239, 68, 68, 0.5);
-  box-shadow: 0 20px 40px -15px rgba(239, 68, 68, 0.3), 0 0 0 1px rgba(239, 68, 68, 0.2);
-  transform: translateY(-4px);
+/* Admin terminal theme */
+.admin-terminal {
+  font-family: 'JetBrains Mono', monospace;
+  background: #0a0f0a;
+  color: #33ff33;
 }
 
-/* Admin Card Utility */
-.admin-card {
-  background: rgba(18, 8, 14, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.03);
-}
-
-.admin-card-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.admin-card-hover:hover {
-  background: rgba(26, 10, 18, 0.98);
-  border-color: rgba(239, 68, 68, 0.45);
-  box-shadow: 0 15px 35px -5px rgba(239, 68, 68, 0.25);
-  transform: translateY(-2px);
-}
-
-/* Public Cosmic Glass Cards */
-.cosmic-card {
-  background: rgba(18, 8, 14, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
-}
-
-.cosmic-card-hover {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.cosmic-card-hover:hover {
-  background: rgba(26, 10, 18, 0.88);
-  border-color: rgba(239, 68, 68, 0.45);
-  box-shadow: 0 15px 35px -5px rgba(239, 68, 68, 0.25);
-  transform: translateY(-2px);
-}
-
-/* Subtle luxury ambient mesh */
-.bg-radial-gradient {
-  background: radial-gradient(circle at 50% 15%, rgba(239, 68, 68, 0.09) 0%, rgba(220, 38, 38, 0.04) 40%, transparent 80%);
-}
-
-.gold-badge {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.25) 100%);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #f87171;
-}
-
-/* 3D Perspective Tilt container */
-.preserve-3d {
-  transform-style: preserve-3d;
-  perspective: 1000px;
-}
-
-/* Hide scrollbar for clean horizontal story / tabs scrolling */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-.animate-slideUp {
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.admin-terminal .panel {
+  border: 1px solid #33ff33;
 }

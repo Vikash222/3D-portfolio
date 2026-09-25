@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace "in.mrvikash.portfolio"
+    namespace "mrvikash.in"
     compileSdk 35
 
     defaultConfig {
-        applicationId "in.mrvikash.portfolio"
+        applicationId "mrvikash.in"
         minSdk 21
         targetSdk 35
         versionCode 1

@@ -1,0 +1,10 @@
+# Vikash Kumar - Portfolio & AI Specification
+> B.Tech Computer Science Engineering Student @ IKGPTU & Full-Stack Software Engineer
+
+- Name: Vikash Kumar (Mr Vikash)
+- Role: Full-Stack Developer, AI & System Design Explorer
+- Degree: B.Tech in Computer Science & Engineering (2024 - 2028), I.K. Gujral Punjab Technical University (IKGPTU), Kapurthala, Punjab
+- Core Stack: React, Next.js, Node.js, Express, Laravel (PHP), Python, C++, MySQL, SQLite, Tailwind CSS
+- Key Projects: Hostel Attendance & Management System (Hostel Kavach with GPS geofencing), Smart Booking System, Resume Forge AI, SmartGate Entry Automation
+- Contact: heyvikash@icloud.com | +91-7493929836
+- Links: https://mrvikash.in | https://github.com/Vikash222 | https://www.linkedin.com/in/vikash-kumar-ab436131a/
