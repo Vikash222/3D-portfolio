@@ -12,6 +12,9 @@ if [ ! -f /var/www/html/.env ]; then
     cp /var/www/html/.env.example /var/www/html/.env
 fi
 
+# Force DB_CONNECTION to pgsql in .env if it was copied previously with sqlite
+sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/g' /var/www/html/.env || true
+
 # Ensure SQLite database exists if DB_CONNECTION is sqlite
 if [ "${DB_CONNECTION:-sqlite}" = "sqlite" ]; then
     mkdir -p /var/www/html/database
