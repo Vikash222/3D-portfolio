@@ -16,11 +16,12 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libsqlite3-dev \
+    libpq-dev \
     libzip-dev \
     zip \
     unzip \
     sqlite3 \
-    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite mbstring exif pcntl bcmath gd zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
