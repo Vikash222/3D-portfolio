@@ -21,11 +21,11 @@ export default function AdminLogin() {
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
 
-  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'admin@mrvikash.in',
-      password: 'Admin@123',
+      email: '',
+      password: '',
     },
   });
 
@@ -117,23 +117,7 @@ export default function AdminLogin() {
               <ArrowRight className="w-4 h-4" />
             </Button>
 
-            {/* Quick Demo Credentials helper */}
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-              <div>
-                <span className="font-semibold text-slate-300 block">Default Admin Account</span>
-                <span className="font-mono text-[10px]">admin@mrvikash.in / Admin@123</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setValue('email', 'admin@mrvikash.in');
-                  setValue('password', 'Admin@123');
-                }}
-                className="text-xs text-emerald-400 hover:underline font-mono"
-              >
-                Auto-fill
-              </button>
-            </div>
+
 
             <div className="text-center pt-2">
               <Link to="/" className="text-xs text-slate-400 hover:text-emerald-400 transition-colors">
