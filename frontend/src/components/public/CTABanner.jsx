@@ -21,12 +21,18 @@ export default function CTABanner() {
           </div>
           
           <div className="md:w-2/5 flex flex-col sm:flex-row gap-4 relative z-10 w-full md:justify-end">
-            <button className="bg-[#DDA75B] text-[#2D2926] px-8 py-4 rounded-xl font-bold hover:bg-[#c9954a] transition-all transform hover:scale-105 shadow-lg whitespace-nowrap">
-              Submit a Proposal
-            </button>
-            <button className="border-2 border-[#F9F6F0]/20 text-[#F9F6F0] px-8 py-4 rounded-xl font-bold hover:bg-[#F9F6F0]/10 transition-colors whitespace-nowrap">
-              View Open Topics
-            </button>
+            <a 
+              href="#contact"
+              className="bg-[#DDA75B] text-[#2D2926] px-8 py-4 rounded-xl font-bold hover:bg-[#c9954a] transition-all transform hover:scale-105 shadow-lg whitespace-nowrap text-center"
+            >
+              Contact Me
+            </a>
+            <a 
+              href="#projects"
+              className="border-2 border-[#F9F6F0]/20 text-[#F9F6F0] px-8 py-4 rounded-xl font-bold hover:bg-[#F9F6F0]/10 transition-colors whitespace-nowrap text-center"
+            >
+              View Projects
+            </a>
           </div>
         </div>
       </div>
