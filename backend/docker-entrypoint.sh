@@ -44,6 +44,9 @@ if [ -n "$ADMIN_EMAIL" ] && [ -n "$ADMIN_PASSWORD" ]; then
     php artisan make:admin "$ADMIN_EMAIL" "$ADMIN_PASSWORD" "${ADMIN_NAME:-Vikash Kumar}" || true
 fi
 
+# Link public storage directory for media & uploads
+php artisan storage:link || true
+
 # Cache configuration and routes for blazing fast production performance
 php artisan config:cache || true
 php artisan route:cache || true

@@ -13,7 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureIsAdmin::class,
         ]);
+        $middleware->redirectGuestsTo(function ($request) {
+            abort(401, 'Unauthenticated');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated: Invalid or missing bearer token.'
+            ], 401);
+        });
     })->create();

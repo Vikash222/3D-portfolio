@@ -26,9 +26,9 @@ export default function ProjectDetail() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        if (typeof getProject === 'function') {
-          // If we had a real API call: const data = await getProject(id);
-          // setProject(data);
+        const res = await getProject(id);
+        if (res.data?.data) {
+          setProject(res.data.data);
         }
       } catch (error) {
         console.error('Failed to fetch project', error);

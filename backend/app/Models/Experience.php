@@ -1,31 +1,16 @@
 <?php
-
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Experience extends Model
-{
-    use HasFactory;
-
+class Experience extends Model {
     protected $fillable = [
-        'company',
-        'role',
-        'period',
-        'location',
-        'description',
-        'highlights',
-        'is_current',
-        'sort_order',
+        'company', 'position', 'period', 'start_date', 'end_date',
+        'is_current', 'location', 'description', 'technologies',
+        'company_logo', 'display_order'
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'highlights' => 'array',
-            'is_current' => 'boolean',
-            'sort_order' => 'integer',
-        ];
-    }
+    protected $casts = [
+        'technologies' => 'array',
+        'is_current' => 'boolean',
+        'display_order' => 'integer'
+    ];
 }

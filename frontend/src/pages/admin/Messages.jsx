@@ -11,7 +11,7 @@ export default function Messages() {
     try {
       setLoading(true);
       const res = await getMessages();
-      setMessages(res.data || []);
+      setMessages(res.data?.data || res.data || []);
     } catch (err) {
       toast.error('FAILED TO FETCH MESSAGES');
     } finally {

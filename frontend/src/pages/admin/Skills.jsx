@@ -12,7 +12,7 @@ export default function Skills() {
     try {
       setLoading(true);
       const res = await adminGetSkills();
-      setSkills(res.data || []);
+      setSkills(res.data?.data || res.data || []);
     } catch (err) {
       toast.error('FAILED TO FETCH SKILLS');
     } finally {

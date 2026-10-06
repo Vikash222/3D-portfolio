@@ -1,83 +1,100 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import AdminLayout from '../../components/admin/AdminLayout';
-import { getStats } from '../../api/adminApi';
+import React, { useState, useEffect } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { getStats, exportBackup } from '@/api/adminApi';
+import AdminLayout from '@/components/admin/AdminLayout';
+
+import DashboardView from './DashboardView';
+import ContentView from './ContentView';
+import CommunicationView from './CommunicationView';
+import MediaView from './MediaView';
+import WebsiteView from './WebsiteView';
+import AnalyticsView from './AnalyticsView';
+import SystemView from './SystemView';
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ projects: 0, messages: 0, skills: 0, views: 0 });
+  const { tab } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const normalizeTab = (raw) => {
+    if (!raw) return 'dashboard';
+    const aliases = {
+      profile: 'about',
+      messages: 'inbox',
+      analytics: 'analytics-overview',
+      content: 'hero',
+      security: 'users',
+      roles: 'users',
+      logs: 'activity-logs',
+    };
+    return aliases[raw] || raw;
+  };
+
+  const currentTab = normalizeTab(tab || searchParams.get('tab'));
+  const [activeTab, setActiveTab] = useState(currentTab);
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    getStats().then(res => {
-      if (res.data) setStats(res.data);
-    }).catch(console.error);
+    setActiveTab(normalizeTab(tab || searchParams.get('tab')));
+  }, [tab, searchParams]);
+
+  useEffect(() => {
+    loadStats();
   }, []);
 
+  const loadStats = () => {
+    getStats()
+      .then((res) => {
+        if (res.data?.data) setStats(res.data.data);
+      })
+      .catch(() => {});
+  };
+
+  const handleSelectTab = (tabId) => {
+    setActiveTab(tabId);
+    setSearchParams({ tab: tabId });
+  };
+
+  const handleExportBackup = async () => {
+    try {
+      const res = await exportBackup();
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(res.data));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `portfolio-backup-${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      toast.success('Database backup archive downloaded');
+    } catch (e) {
+      toast.error('Backup download failed');
+    }
+  };
+
+  // Group categorizer
+  const isContent = ['hero', 'about', 'skills', 'projects', 'experience', 'education', 'certificates', 'achievements', 'blog', 'testimonials'].includes(activeTab);
+  const isCommunication = ['inbox', 'reviews', 'notifications'].includes(activeTab);
+  const isMedia = activeTab === 'media';
+  const isWebsite = ['navigation', 'sections', 'theme', 'seo', 'contact', 'socials'].includes(activeTab);
+  const isAnalytics = activeTab.startsWith('analytics');
+  const isSystem = ['users', 'activity-logs', 'backup', 'settings'].includes(activeTab);
+
   return (
-    <AdminLayout>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Panel 1 */}
-        <div className="border border-[#33ff33] p-4 flex flex-col">
-          <div className="border-b border-[#33ff33] pb-2 mb-3 font-bold uppercase">
-            [01] PROJECTS CMS
-          </div>
-          <div className="flex-1 text-sm space-y-2">
-            <div className="flex justify-between"><span>TOTAL PROJECTS:</span> <span>{stats.projects || 8}</span></div>
-            <div className="flex justify-between"><span>PUBLISHED:</span> <span className="text-[#33ff33]">6</span></div>
-            <div className="flex justify-between"><span>DRAFT:</span> <span className="text-[#ffcc00]">2</span></div>
-            <div className="flex justify-between"><span>VIEWS:</span> <span>{stats.views || 1840}</span></div>
-          </div>
-          <div className="mt-4 pt-4 border-t border-dashed border-[#33ff33]">
-            <Link to="/admin/projects" className="text-[#ffcc00] hover:underline uppercase text-xs">{'> MANAGE PROJECTS'}</Link>
-          </div>
-        </div>
+    <AdminLayout activeTab={activeTab} onSelectTab={handleSelectTab}>
+      {activeTab === 'dashboard' && (
+        <DashboardView
+          stats={stats}
+          onNavigate={handleSelectTab}
+          onExportBackup={handleExportBackup}
+        />
+      )}
 
-        {/* Panel 2 */}
-        <div className="border border-[#33ff33] p-4 flex flex-col">
-          <div className="border-b border-[#33ff33] pb-2 mb-3 font-bold uppercase">
-            [02] MESSAGES INBOX
-          </div>
-          <div className="flex-1 text-sm space-y-2">
-            <div className="flex justify-between"><span>TOTAL MESSAGES:</span> <span>{stats.messages || 12}</span></div>
-            <div className="flex justify-between"><span>UNREAD:</span> <span className="text-[#ffcc00]">3</span></div>
-            <div className="flex justify-between"><span>LAST RECEIVED:</span> <span>2 HOURS AGO</span></div>
-          </div>
-          <div className="mt-4 pt-4 border-t border-dashed border-[#33ff33]">
-            <Link to="/admin/messages" className="text-[#ffcc00] hover:underline uppercase text-xs">{'> OPEN INBOX'}</Link>
-          </div>
-        </div>
-
-        {/* Panel 3 */}
-        <div className="border border-[#33ff33] p-4 flex flex-col">
-          <div className="border-b border-[#33ff33] pb-2 mb-3 font-bold uppercase">
-            [03] PROFILE STATUS
-          </div>
-          <div className="flex-1 text-sm space-y-2">
-            <div className="flex justify-between"><span>SKILLS LISTED:</span> <span>{stats.skills || 24}</span></div>
-            <div className="flex justify-between"><span>RESUME:</span> <span>UPLOADED (V2.1)</span></div>
-            <div className="flex justify-between"><span>STATUS:</span> <span className="text-[#33ff33]">AVAILABLE</span></div>
-          </div>
-          <div className="mt-4 pt-4 border-t border-dashed border-[#33ff33] flex gap-4">
-            <Link to="/admin/profile" className="text-[#ffcc00] hover:underline uppercase text-xs">{'> EDIT PROFILE'}</Link>
-            <Link to="/admin/skills" className="text-[#ffcc00] hover:underline uppercase text-xs">{'> MANAGE SKILLS'}</Link>
-          </div>
-        </div>
-
-        {/* Panel 4 */}
-        <div className="border border-[#33ff33] p-4 flex flex-col">
-          <div className="border-b border-[#33ff33] pb-2 mb-3 font-bold uppercase">
-            [04] SYSTEM HEALTH
-          </div>
-          <div className="flex-1 text-sm space-y-2">
-            <div className="flex justify-between"><span>UPTIME:</span> <span>48D 16H 23M</span></div>
-            <div className="flex justify-between"><span>MEM USAGE:</span> <span>38%</span></div>
-            <div className="flex justify-between"><span>API STATUS:</span> <span className="text-[#33ff33]">ONLINE</span></div>
-            <div className="flex justify-between"><span>LAST BACKUP:</span> <span>TODAY 04:00 AM</span></div>
-          </div>
-          <div className="mt-4 pt-4 border-t border-dashed border-[#33ff33]">
-            <span className="text-[#33ff33] text-xs uppercase">ALL SYSTEMS NOMINAL</span>
-          </div>
-        </div>
-      </div>
+      {isContent && <ContentView section={activeTab} />}
+      {isCommunication && <CommunicationView section={activeTab} />}
+      {isMedia && <MediaView />}
+      {isWebsite && <WebsiteView section={activeTab} />}
+      {isAnalytics && <AnalyticsView subSection={activeTab} />}
+      {isSystem && <SystemView section={activeTab} />}
     </AdminLayout>
   );
 }

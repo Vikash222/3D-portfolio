@@ -11,7 +11,7 @@ export default function Projects() {
     try {
       setLoading(true);
       const res = await adminGetProjects();
-      setProjects(res.data || []);
+      setProjects(res.data?.data || res.data || []);
     } catch (err) {
       toast.error('FAILED TO FETCH PROJECTS');
     } finally {

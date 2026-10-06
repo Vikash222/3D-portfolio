@@ -1,68 +1,65 @@
-import React, { useEffect, useState } from 'react';
-import { getSkills } from '../../api/skillApi'; // Assuming this exists, with a fallback
+import React from 'react';
 import { cn } from '../../lib/utils';
 
-const fallbackSkills = [
-  { category: 'CORE LANGUAGES', items: ['Java', 'Python', 'JavaScript (ES6+)', 'TypeScript'] },
-  { category: 'WEB & BACKEND TECHNOLOGIES', items: ['React', 'Tailwind CSS', 'shadcn/ui', 'Laravel 11', 'Headless REST API', 'MySQL 8.0', 'Middleware', 'Redux', 'Express'] },
-  { category: 'TOOLS & ECOSYSTEM', items: ['Git', 'GitHub', 'VS Code', 'Figma', 'AI Tools & Copilots', 'Docker', 'Linux', 'Vite'] },
-  { category: 'FRAMEWORKS & CONCEPTS', items: ['Data Structures & Algorithms (DSA)', 'Object-Oriented Programming (OOP)', 'Loop Engineering', 'REST Architecture', 'AIML', 'Model Integration'] },
-];
+export default function SkillsSection({ skills = [], profile }) {
+  const primaryColor = profile?.theme_settings?.primary_color || '#DDA75B';
 
-export default function SkillsSection() {
-  const [skills, setSkills] = useState(fallbackSkills);
+  // Group by category_name or category
+  const groups = skills.reduce((acc, skill) => {
+    const cat = skill.category_name || skill.category || 'General';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(skill);
+    return acc;
+  }, {});
 
-  useEffect(() => {
-    // Attempt to fetch from API
-    const fetchSkills = async () => {
-      try {
-        if (typeof getSkills === 'function') {
-          const data = await getSkills();
-          if (data && data.length > 0) {
-            // Group by category if API returns flat list, or use as is
-            // Assuming data is formatted correctly or we just keep fallback for safety
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch skills', error);
-      }
-    };
-    fetchSkills();
-  }, []);
+  const categories = Object.keys(groups);
 
   return (
-    <section id="skills" className="py-24 bg-white scroll-mt-20">
+    <section id="skills" className="py-24 bg-[#121214] text-[#F9F6F0] scroll-mt-20 border-t border-slate-800/80">
       <div className="container mx-auto px-6 md:px-12">
-        <div className="mb-16">
-          <span className="text-[#DDA75B] text-sm font-bold tracking-widest uppercase mb-2 block">
-            MY TOOLKIT
+        <div className="mb-14">
+          <span style={{ color: primaryColor }} className="text-xs font-mono font-bold tracking-widest uppercase mb-2 block">
+            TECHNICAL ARSENAL & TOOLKIT
           </span>
-          <h2 className="text-4xl md:text-5xl font-serif text-[#2D2926] font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl font-serif text-white font-bold mb-4">
             What I Work With
           </h2>
-          <p className="text-lg text-gray-500 max-w-2xl">
-            A comprehensive overview of my technical arsenal, ranging from core programming languages to modern architectural paradigms.
+          <p className="text-base text-slate-400 max-w-2xl leading-relaxed">
+            A comprehensive overview of my technical stack, spanning low-level algorithms, headless backend systems, and modern AI pipelines.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {skills.map((group, idx) => (
-            <div key={idx} className="border border-gray-100 rounded-2xl p-8 hover:shadow-md transition-shadow bg-[#F9F6F0]/30">
-              <h3 className="text-[#2D2926] font-bold text-lg mb-6 tracking-wide">
-                {group.category}
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                {group.items.map((item, i) => (
-                  <span 
-                    key={i} 
-                    className="inline-flex items-center px-4 py-2 bg-white border border-gray-200 text-[#2D2926] text-sm font-medium rounded-full hover:border-[#DDA75B] hover:text-[#DDA75B] transition-colors cursor-default"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {categories.map((cat, idx) => (
+            <div
+              key={idx}
+              className="border border-slate-800 rounded-2xl p-7 bg-slate-900/50 hover:border-slate-700 transition-colors space-y-5"
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
+                <h3 className="text-white font-bold text-sm tracking-wider uppercase font-mono">
+                  {cat}
+                </h3>
+                <span className="text-[11px] text-slate-500 font-mono">
+                  {groups[cat].length} Skills
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-2.5">
+                {groups[cat].map((skill, sIdx) => (
+                  <span
+                    key={sIdx}
+                    className="inline-flex items-center px-3.5 py-1.5 bg-slate-950/80 border border-slate-800 text-slate-200 text-xs font-medium rounded-xl hover:border-emerald-400 transition-colors"
                   >
-                    <span className={cn("w-2 h-2 rounded-full mr-2", 
-                      idx === 0 ? "bg-[#DDA75B]" : 
-                      idx === 1 ? "bg-[#8A9A86]" : 
-                      idx === 2 ? "bg-[#E8C5C8]" : "bg-[#2D2926]"
-                    )} />
-                    {item}
+                    <span
+                      style={{ backgroundColor: primaryColor }}
+                      className="w-1.5 h-1.5 rounded-full mr-2"
+                    />
+                    <span>{skill.name}</span>
+                    {skill.proficiency && (
+                      <span className="ml-2 text-[10px] text-slate-500 font-mono">
+                        {skill.proficiency}%
+                      </span>
+                    )}
                   </span>
                 ))}
               </div>

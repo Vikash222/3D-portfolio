@@ -1,33 +1,16 @@
 <?php
-
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Testimonial extends Model
-{
-    use HasFactory;
-
+class Testimonial extends Model {
     protected $fillable = [
-        'name',
-        'role',
-        'company',
-        'content',
-        'rating',
-        'avatar_url',
-        'is_verified',
-        'linkedin_url',
-        'project_context',
-        'sort_order',
+        'name', 'designation', 'company', 'avatar_url',
+        'content', 'rating', 'is_approved', 'is_featured', 'is_published'
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'rating' => 'integer',
-            'is_verified' => 'boolean',
-            'sort_order' => 'integer',
-        ];
-    }
+    protected $casts = [
+        'rating' => 'integer',
+        'is_approved' => 'boolean',
+        'is_featured' => 'boolean',
+        'is_published' => 'boolean'
+    ];
 }
