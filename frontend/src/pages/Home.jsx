@@ -158,16 +158,19 @@ export default function Home() {
               return <ProjectsSection key="projects" projects={data?.projects} profile={profile} />;
             case 'experience':
               return <ExperienceSection key="experience" experiences={data?.experiences} />;
-            case 'education':
+            case 'education': {
+              const certsEnabled = sectionsConfig.find(s => s.id === 'certificates')?.enabled !== false;
+              const achEnabled = sectionsConfig.find(s => s.id === 'achievements')?.enabled !== false;
               return (
                 <EducationCertificatesSection
                   key="education-certs"
                   educations={data?.educations}
-                  certificates={data?.certificates}
-                  achievements={data?.achievements}
+                  certificates={certsEnabled ? data?.certificates : []}
+                  achievements={achEnabled ? data?.achievements : []}
                   profile={profile}
                 />
               );
+            }
             case 'testimonials':
               return <TestimonialsSection key="testimonials" testimonials={data?.testimonials} profile={profile} />;
             case 'cta':

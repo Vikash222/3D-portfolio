@@ -2,16 +2,20 @@ import React from 'react';
 import { GraduationCap, Award, Calendar, ExternalLink, CheckCircle2 } from 'lucide-react';
 
 export default function EducationCertificatesSection({ educations = [], certificates = [], achievements = [], profile }) {
-  if (educations.length === 0 && certificates.length === 0 && achievements.length === 0) return null;
+  const hasEducations = educations && educations.length > 0;
+  const hasCertOrAch = (certificates && certificates.length > 0) || (achievements && achievements.length > 0);
+
+  if (!hasEducations && !hasCertOrAch) return null;
   const primaryColor = profile?.theme_settings?.primary_color || '#DDA75B';
 
   return (
     <section id="education" className="py-24 bg-[#121214] text-[#F9F6F0] scroll-mt-20 border-t border-slate-800">
       <div className="container mx-auto px-6 md:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className={`grid grid-cols-1 ${hasEducations && hasCertOrAch ? 'lg:grid-cols-2' : ''} gap-12 max-w-7xl mx-auto`}>
           {/* Left: Education & Academics */}
-          <div>
-            <div className="mb-8">
+          {hasEducations && (
+            <div>
+              <div className="mb-8">
               <span style={{ color: primaryColor }} className="text-xs font-mono font-bold tracking-widest uppercase mb-2 block">
                 ACADEMIC FOUNDATION
               </span>
@@ -66,11 +70,12 @@ export default function EducationCertificatesSection({ educations = [], certific
                 </div>
               ))}
             </div>
-          </div>
+          )}
 
           {/* Right: Certifications & Honors */}
-          <div>
-            <div className="mb-8">
+          {hasCertOrAch && (
+            <div>
+              <div className="mb-8">
               <span style={{ color: primaryColor }} className="text-xs font-mono font-bold tracking-widest uppercase mb-2 block">
                 INDUSTRY CREDENTIALS
               </span>
@@ -145,7 +150,7 @@ export default function EducationCertificatesSection({ educations = [], certific
                 </div>
               ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>
