@@ -159,7 +159,6 @@ export default function Home() {
             case 'experience':
               return <ExperienceSection key="experience" experiences={data?.experiences} />;
             case 'education':
-            case 'certificates':
               return (
                 <EducationCertificatesSection
                   key="education-certs"
