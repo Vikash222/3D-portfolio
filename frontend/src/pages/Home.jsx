@@ -160,7 +160,9 @@ export default function Home() {
               return <ExperienceSection key="experience" experiences={data?.experiences} />;
             case 'education': {
               const certsEnabled = sectionsConfig.find(s => s.id === 'certificates')?.enabled !== false;
-              const achEnabled = sectionsConfig.find(s => s.id === 'achievements')?.enabled !== false;
+              const achMatch = sectionsConfig.find(s => s.id === 'achievements');
+              const achEnabled = achMatch ? achMatch.enabled !== false : certsEnabled;
+              
               return (
                 <EducationCertificatesSection
                   key="education-certs"
