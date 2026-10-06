@@ -53,6 +53,7 @@ Route::prefix('v1/admin')->middleware(['auth:sanctum', 'admin'])->group(function
     // Profile & Settings
     Route::get('/profile', [AdminProfileController::class, 'show']);
     Route::put('/profile', [AdminProfileController::class, 'update']);
+    Route::put('/account', [AuthController::class, 'updateAccount']);
     Route::post('/profile/image', [AdminProfileController::class, 'uploadImage']);
     Route::post('/profile/resume', [AdminProfileController::class, 'uploadResume']);
 

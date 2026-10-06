@@ -6,6 +6,7 @@ export const logout = () => axiosClient.post('/admin/logout');
 export const getAdminMe = () => axiosClient.get('/admin/me');
 export const getAdminUsers = () => axiosClient.get('/admin/users');
 export const updateAdminUserRole = (id, role) => axiosClient.patch(`/admin/users/${id}/role`, { role });
+export const updateAdminAccount = (data) => axiosClient.put('/admin/account', data);
 
 // --- DASHBOARD & ANALYTICS ---
 export const getStats = () => axiosClient.get('/admin/stats');

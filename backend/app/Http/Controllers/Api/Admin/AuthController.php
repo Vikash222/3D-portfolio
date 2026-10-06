@@ -52,4 +52,38 @@ class AuthController extends Controller {
         }
         return $this->success(null, 'Logged out');
     }
+
+    public function updateAccount(Request $request) {
+        $user = $request->user();
+        $request->validate([
+            'name' => 'nullable|string|max:100',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'current_password' => 'nullable|string',
+            'new_password' => 'nullable|string|min:6',
+        ]);
+
+        if ($request->filled('new_password')) {
+            if (!$request->filled('current_password') || !Hash::check($request->current_password, $user->password)) {
+                return $this->error('Current password is incorrect.', 422);
+            }
+            $user->password = Hash::make($request->new_password);
+        }
+
+        if ($request->filled('name')) {
+            $user->name = $request->name;
+        }
+
+        $user->email = $request->email;
+        $user->save();
+
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'action' => 'security_update',
+            'details' => 'Admin updated account credentials',
+            'ip_address' => $request->ip(),
+        ]);
+
+        return $this->success($user, 'Account credentials updated successfully');
+    }
 }

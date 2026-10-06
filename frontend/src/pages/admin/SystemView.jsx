@@ -6,8 +6,10 @@ import {
 import toast from 'react-hot-toast';
 import {
   getAdminUsers, updateAdminUserRole, getActivityLogs,
-  exportBackup, restoreBackup, getProfile, updateProfile
+  exportBackup, restoreBackup, getProfile, updateProfile,
+  updateAdminAccount
 } from '@/api/adminApi';
+import { useAuthStore } from '@/store/authStore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +21,21 @@ export default function SystemView({ section = 'users' }) {
   const [activityLogs, setActivityLogs] = useState([]);
   const [profile, setProfile] = useState(null);
   const [restoreJson, setRestoreJson] = useState('');
+
+  const { user: authUser, setAuth } = useAuthStore();
+  const [adminName, setAdminName] = useState('');
+  const [adminEmail, setAdminEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [savingAccount, setSavingAccount] = useState(false);
+
+  useEffect(() => {
+    if (authUser) {
+      setAdminName(authUser.name || '');
+      setAdminEmail(authUser.email || '');
+    }
+  }, [authUser]);
 
   useEffect(() => {
     loadData();
@@ -91,6 +108,43 @@ export default function SystemView({ section = 'users' }) {
       toast.success('Global site settings updated!');
     } catch (e) {
       toast.error('Failed to save settings');
+    }
+  };
+
+  const handleUpdateAccount = async (e) => {
+    e?.preventDefault();
+    if (newPassword && newPassword !== confirmPassword) {
+      return toast.error('New passwords do not match');
+    }
+    if (newPassword && !currentPassword) {
+      return toast.error('Please enter current password to set a new password');
+    }
+    try {
+      setSavingAccount(true);
+      const payload = {
+        name: adminName,
+        email: adminEmail,
+      };
+      if (currentPassword && newPassword) {
+        payload.current_password = currentPassword;
+        payload.new_password = newPassword;
+      }
+      const res = await updateAdminAccount(payload);
+      if (res.data?.success) {
+        toast.success('Admin credentials updated successfully!');
+        if (res.data?.data) {
+          setAuth(useAuthStore.getState().token, res.data.data);
+        }
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        toast.error(res.data?.message || 'Failed to update credentials');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update credentials');
+    } finally {
+      setSavingAccount(false);
     }
   };
 
@@ -323,6 +377,90 @@ export default function SystemView({ section = 'users' }) {
                   label="Allow visitors to submit testimonials on public portfolio"
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Admin Account & Security Card */}
+          <Card className="space-y-4">
+            <CardHeader className="pb-3 border-b border-slate-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    Admin Login Credentials & Security
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-400">
+                    Change your admin login email address or set a new password
+                  </CardDescription>
+                </div>
+                <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 text-[10px]">
+                  SECURE ACCESS
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+              <form onSubmit={handleUpdateAccount} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1">Admin Name</label>
+                    <Input
+                      value={adminName}
+                      onChange={(e) => setAdminName(e.target.value)}
+                      placeholder="Vikash Kumar"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1">Admin Email (Login ID)</label>
+                    <Input
+                      type="email"
+                      value={adminEmail}
+                      onChange={(e) => setAdminEmail(e.target.value)}
+                      placeholder="admin@mrvikash.in"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <span className="text-xs font-semibold text-slate-300 block">Change Password (Leave blank to keep current)</span>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-xs text-slate-400 block mb-1">Current Password</label>
+                      <Input
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="Current password"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 block mb-1">New Password</label>
+                      <Input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Min 6 characters"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 block mb-1">Confirm New Password</label>
+                      <Input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Repeat new password"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <Button type="submit" disabled={savingAccount} variant="default" size="sm">
+                    <Save className="w-3.5 h-3.5" />
+                    {savingAccount ? 'Saving...' : 'Update Admin Credentials'}
+                  </Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
         </div>
