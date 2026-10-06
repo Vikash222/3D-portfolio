@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
   Users, History, Database, Settings, ShieldCheck, Download,
-  Upload, Save, AlertTriangle, CheckCircle2, Lock
+  Upload, Save, AlertTriangle, CheckCircle2, Lock, Smartphone,
+  KeyRound, Copy, Check, QrCode
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   getAdminUsers, updateAdminUserRole, getActivityLogs,
   exportBackup, restoreBackup, getProfile, updateProfile,
-  updateAdminAccount
+  updateAdminAccount, get2FaStatus, setup2Fa, confirm2Fa, disable2Fa
 } from '@/api/adminApi';
 import { useAuthStore } from '@/store/authStore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -15,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Dialog } from '@/components/ui/dialog';
 
 export default function SystemView({ section = 'users' }) {
   const [users, setUsers] = useState([]);
@@ -29,6 +32,19 @@ export default function SystemView({ section = 'users' }) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [savingAccount, setSavingAccount] = useState(false);
+
+  // 2FA state
+  const [twoFactorStatus, setTwoFactorStatus] = useState({ enabled: false, recovery_codes: [] });
+  const [setupModalOpen, setSetupModalOpen] = useState(false);
+  const [setupData, setSetupData] = useState(null);
+  const [confirmCode, setConfirmCode] = useState('');
+  const [confirming2Fa, setConfirming2Fa] = useState(false);
+  const [recoveryCodesModalOpen, setRecoveryCodesModalOpen] = useState(false);
+  const [newRecoveryCodes, setNewRecoveryCodes] = useState([]);
+  const [disableModalOpen, setDisableModalOpen] = useState(false);
+  const [disablePassword, setDisablePassword] = useState('');
+  const [disabling2Fa, setDisabling2Fa] = useState(false);
+  const [copiedSecret, setCopiedSecret] = useState(false);
 
   useEffect(() => {
     if (authUser) {
@@ -52,6 +68,10 @@ export default function SystemView({ section = 'users' }) {
       } else if (section === 'settings') {
         const res = await getProfile();
         if (res.data?.data) setProfile(res.data.data);
+        try {
+          const twoFaRes = await get2FaStatus();
+          if (twoFaRes.data?.data) setTwoFactorStatus(twoFaRes.data.data);
+        } catch (_) {}
       }
     } catch (e) {
       toast.error('Failed to load system settings');
@@ -145,6 +165,79 @@ export default function SystemView({ section = 'users' }) {
       toast.error(err.response?.data?.message || 'Failed to update credentials');
     } finally {
       setSavingAccount(false);
+    }
+  };
+
+  const handleStart2FaSetup = async () => {
+    try {
+      const res = await setup2Fa();
+      if (res.data?.data) {
+        setSetupData(res.data.data);
+        setConfirmCode('');
+        setCopiedSecret(false);
+        setSetupModalOpen(true);
+      }
+    } catch (e) {
+      toast.error('Failed to initiate 2FA setup');
+    }
+  };
+
+  const handleCopySecret = () => {
+    if (setupData?.secret) {
+      navigator.clipboard.writeText(setupData.secret);
+      setCopiedSecret(true);
+      toast.success('Secret key copied to clipboard!');
+      setTimeout(() => setCopiedSecret(false), 2000);
+    }
+  };
+
+  const handleConfirm2Fa = async (e) => {
+    e?.preventDefault();
+    if (!confirmCode || confirmCode.trim().length !== 6) {
+      return toast.error('Please enter the 6-digit code from Microsoft Authenticator');
+    }
+    try {
+      setConfirming2Fa(true);
+      const res = await confirm2Fa(confirmCode.trim());
+      if (res.data?.success) {
+        toast.success('Microsoft Authenticator 2-FA enabled successfully!');
+        setSetupModalOpen(false);
+        setTwoFactorStatus({
+          enabled: true,
+          recovery_codes: res.data.data?.recovery_codes || [],
+        });
+        setNewRecoveryCodes(res.data.data?.recovery_codes || []);
+        setRecoveryCodesModalOpen(true);
+      } else {
+        toast.error(res.data?.message || 'Invalid code');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Invalid code. Verify time synchronization in Microsoft Authenticator.');
+    } finally {
+      setConfirming2Fa(false);
+    }
+  };
+
+  const handleDisable2Fa = async (e) => {
+    e?.preventDefault();
+    if (!disablePassword) {
+      return toast.error('Please enter your password to disable 2FA');
+    }
+    try {
+      setDisabling2Fa(true);
+      const res = await disable2Fa(disablePassword);
+      if (res.data?.success) {
+        toast.success('2FA has been disabled');
+        setTwoFactorStatus({ enabled: false, recovery_codes: [] });
+        setDisableModalOpen(false);
+        setDisablePassword('');
+      } else {
+        toast.error(res.data?.message || 'Failed to disable 2FA');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Incorrect password');
+    } finally {
+      setDisabling2Fa(false);
     }
   };
 
@@ -463,8 +556,259 @@ export default function SystemView({ section = 'users' }) {
               </form>
             </CardContent>
           </Card>
+
+          {/* Microsoft Authenticator 2-Factor Authentication (2FA) Card */}
+          <Card className="space-y-4">
+            <CardHeader className="pb-3 border-b border-slate-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+                    <Smartphone className="w-4 h-4 text-cyan-400" />
+                    Microsoft Authenticator 2-Factor Authentication (2FA)
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-400">
+                    Secure admin login with 6-digit Time-Based One-Time Passwords (TOTP)
+                  </CardDescription>
+                </div>
+                {twoFactorStatus.enabled ? (
+                  <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 text-[10px] flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> 2FA ACTIVE
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="border-amber-500/30 text-amber-400 bg-amber-500/10 text-[10px]">
+                    2FA NOT ENABLED
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+              {twoFactorStatus.enabled ? (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-start gap-3">
+                    <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-semibold text-emerald-300">Account Protected</h4>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Whenever you sign in, you will be prompted for a 6-digit code from Microsoft Authenticator.
+                      </p>
+                    </div>
+                  </div>
+
+                  {twoFactorStatus.recovery_codes?.length > 0 && (
+                    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                          <KeyRound className="w-3.5 h-3.5 text-amber-400" /> Backup Recovery Codes
+                        </span>
+                        <span className="text-[10px] text-slate-500">{twoFactorStatus.recovery_codes.length} remaining</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">
+                        If you lose access to Microsoft Authenticator, use one of these single-use codes to sign in:
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-xs">
+                        {twoFactorStatus.recovery_codes.map((code, idx) => (
+                          <div key={idx} className="p-1.5 rounded bg-slate-950 border border-slate-800 text-center text-slate-300">
+                            {code}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex justify-end pt-2">
+                    <Button
+                      onClick={() => {
+                        setDisablePassword('');
+                        setDisableModalOpen(true);
+                      }}
+                      variant="danger"
+                      size="sm"
+                    >
+                      Disable 2-Factor Authentication
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-semibold text-white">Enable Microsoft Authenticator</h4>
+                    <p className="text-xs text-slate-400 max-w-lg">
+                      Scan a QR code using Microsoft Authenticator (iOS/Android) or any standard TOTP app. Login will require both password and a 6-digit code.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleStart2FaSetup}
+                    variant="default"
+                    size="sm"
+                    className="shrink-0 font-semibold"
+                  >
+                    <Smartphone className="w-4 h-4 mr-1.5" />
+                    Setup 2-FA (Microsoft)
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
+
+      {/* 2FA Setup Modal */}
+      <Dialog
+        open={setupModalOpen}
+        onClose={() => setSetupModalOpen(false)}
+        title="Setup Microsoft Authenticator (2FA)"
+      >
+        {setupData && (
+          <div className="space-y-5">
+            <div className="text-xs text-slate-300 space-y-1">
+              <p><strong>Step 1:</strong> Open <strong>Microsoft Authenticator</strong> on your phone.</p>
+              <p><strong>Step 2:</strong> Tap <strong>+ (Add Account)</strong> → <strong>Other (Google, Facebook, etc.)</strong>.</p>
+              <p><strong>Step 3:</strong> Scan the QR code below:</p>
+            </div>
+
+            <div className="flex justify-center p-4 bg-white rounded-xl w-fit mx-auto shadow-lg">
+              <QRCodeSVG
+                value={setupData.qr_data || setupData.otpauth_uri}
+                size={180}
+                level="M"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] text-slate-400 block">Can't scan? Enter this Secret Key manually:</label>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={setupData.secret}
+                  readOnly
+                  className="font-mono text-xs select-all bg-slate-900"
+                />
+                <Button
+                  onClick={handleCopySecret}
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  className="shrink-0"
+                >
+                  {copiedSecret ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                </Button>
+              </div>
+            </div>
+
+            <form onSubmit={handleConfirm2Fa} className="pt-2 border-t border-slate-800 space-y-3">
+              <label className="text-xs text-slate-300 font-medium block">
+                <strong>Step 4:</strong> Enter the 6-digit code from Microsoft Authenticator to verify:
+              </label>
+              <Input
+                type="text"
+                value={confirmCode}
+                onChange={(e) => setConfirmCode(e.target.value)}
+                placeholder="123456"
+                maxLength={6}
+                className="font-mono text-center tracking-widest text-lg font-bold"
+                autoFocus
+              />
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  onClick={() => setSetupModalOpen(false)}
+                  variant="outline"
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={confirming2Fa}
+                  variant="default"
+                  size="sm"
+                >
+                  {confirming2Fa ? 'Verifying...' : 'Confirm & Activate 2FA'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
+      </Dialog>
+
+      {/* Recovery Codes Modal (Shown right after successful activation) */}
+      <Dialog
+        open={recoveryCodesModalOpen}
+        onClose={() => setRecoveryCodesModalOpen(false)}
+        title="2FA Activated! Save Your Recovery Codes"
+      >
+        <div className="space-y-4">
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>Save these single-use recovery codes in a safe place. If you ever lose your phone, you will need these to log in.</span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-center text-slate-200">
+            {newRecoveryCodes.map((code, idx) => (
+              <div key={idx} className="p-1.5 bg-slate-900 rounded border border-slate-800">
+                {code}
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <Button
+              onClick={() => {
+                navigator.clipboard.writeText(newRecoveryCodes.join('\n'));
+                toast.success('Recovery codes copied!');
+                setRecoveryCodesModalOpen(false);
+              }}
+              variant="default"
+              size="sm"
+            >
+              <Copy className="w-3.5 h-3.5 mr-1" /> Copy Codes & Finish
+            </Button>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Disable 2FA Modal */}
+      <Dialog
+        open={disableModalOpen}
+        onClose={() => setDisableModalOpen(false)}
+        title="Disable Microsoft Authenticator"
+      >
+        <form onSubmit={handleDisable2Fa} className="space-y-4">
+          <p className="text-xs text-slate-400">
+            Enter your admin password to confirm disabling Two-Factor Authentication.
+          </p>
+
+          <div>
+            <label className="text-xs text-slate-300 block mb-1">Admin Password</label>
+            <Input
+              type="password"
+              value={disablePassword}
+              onChange={(e) => setDisablePassword(e.target.value)}
+              placeholder="Enter current password"
+              autoFocus
+              required
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+            <Button
+              type="button"
+              onClick={() => setDisableModalOpen(false)}
+              variant="outline"
+              size="sm"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={disabling2Fa}
+              variant="danger"
+              size="sm"
+            >
+              {disabling2Fa ? 'Disabling...' : 'Confirm Disable 2FA'}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
     </div>
   );
 }

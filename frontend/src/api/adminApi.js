@@ -8,6 +8,13 @@ export const getAdminUsers = () => axiosClient.get('/admin/users');
 export const updateAdminUserRole = (id, role) => axiosClient.patch(`/admin/users/${id}/role`, { role });
 export const updateAdminAccount = (data) => axiosClient.put('/admin/account', data);
 
+// --- 2FA (MICROSOFT AUTHENTICATOR) ---
+export const verify2Fa = (data) => axiosClient.post('/admin/verify-2fa', data);
+export const get2FaStatus = () => axiosClient.get('/admin/2fa/status');
+export const setup2Fa = () => axiosClient.post('/admin/2fa/setup');
+export const confirm2Fa = (code) => axiosClient.post('/admin/2fa/confirm', { code });
+export const disable2Fa = (password) => axiosClient.post('/admin/2fa/disable', { password });
+
 // --- DASHBOARD & ANALYTICS ---
 export const getStats = () => axiosClient.get('/admin/stats');
 export const getAnalytics = () => axiosClient.get('/admin/analytics');

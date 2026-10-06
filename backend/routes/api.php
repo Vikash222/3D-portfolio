@@ -31,12 +31,18 @@ Route::prefix('v1')->group(function () {
 // ADMIN AUTH
 Route::prefix('v1/admin')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('/verify-2fa', [AuthController::class, 'verify2Fa'])->middleware('throttle:5,1');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 });
 
 // ADMIN PROTECTED
 Route::prefix('v1/admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    // 2FA Management (Microsoft Authenticator)
+    Route::get('/2fa/status', [AuthController::class, 'get2FaStatus']);
+    Route::post('/2fa/setup', [AuthController::class, 'setup2Fa']);
+    Route::post('/2fa/confirm', [AuthController::class, 'confirm2Fa']);
+    Route::post('/2fa/disable', [AuthController::class, 'disable2Fa']);
     // Dashboard, Analytics & Global Search
     Route::get('/stats', [AdminDashboardController::class, 'stats']);
     Route::get('/analytics', [AdminDashboardController::class, 'analytics']);
