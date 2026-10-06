@@ -70,6 +70,7 @@ export default function EducationCertificatesSection({ educations = [], certific
                 </div>
               ))}
             </div>
+          </div>
           )}
 
           {/* Right: Certifications & Honors */}
@@ -150,6 +151,7 @@ export default function EducationCertificatesSection({ educations = [], certific
                 </div>
               ))}
             </div>
+          </div>
           )}
         </div>
       </div>
