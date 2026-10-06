@@ -249,7 +249,7 @@ export default function ContentView({ section = 'hero' }) {
                 <CardContent className="space-y-4">
                   <div className="aspect-[4/5] rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative group">
                     <img
-                      src={getAssetUrl(profile.profile_image_url, '/assets/vikash-hero.jpg')}
+                      src={getAssetUrl(profile.profile_image_url, `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'VK')}&background=0D8B93&color=fff`)}
                       alt="Vikash"
                       className="w-full h-full object-cover"
                     />

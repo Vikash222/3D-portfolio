@@ -18,7 +18,7 @@ export default function Footer({ onNavigateAdmin, profile }) {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 via-rose-600 to-red-500 p-[1.5px] shadow-sm shrink-0">
             <div className="w-full h-full bg-[#12070b] rounded-[10px] overflow-hidden flex items-center justify-center">
               <img
-                src={profile?.avatar_url || profile?.hero_image_url || '/assets/vikash-hero.jpg'}
+                src={profile?.avatar_url || profile?.hero_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'VK')}&background=0D8B93&color=fff`}
                 alt={profile?.name || 'Vikash Kumar'}
                 className="w-full h-full object-cover object-center"
                 onError={(e) => {

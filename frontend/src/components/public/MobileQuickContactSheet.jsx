@@ -72,7 +72,7 @@ export default function MobileQuickContactSheet({ isOpen, onClose, profile, onNa
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <img
-                    src={profile?.hero_image_url || '/assets/vikash-hero.jpg'}
+                    src={profile?.hero_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'VK')}&background=0D8B93&color=fff`}
                     alt="Vikash Kumar"
                     className="w-12 h-12 rounded-2xl object-cover border-2 border-red-500 shadow-sm"
                   />

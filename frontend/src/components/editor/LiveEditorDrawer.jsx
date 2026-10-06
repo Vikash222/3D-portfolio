@@ -315,7 +315,7 @@ export default function LiveEditorDrawer({
                 <div className="flex items-center gap-3">
                   <div className="w-16 h-20 rounded-xl overflow-hidden bg-slate-900 border border-white/10 shrink-0">
                     <img
-                      src={profile?.hero_image_url || '/assets/vikash-hero.jpg'}
+                      src={profile?.hero_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'VK')}&background=0D8B93&color=fff`}
                       alt="Hero"
                       className="w-full h-full object-cover"
                     />

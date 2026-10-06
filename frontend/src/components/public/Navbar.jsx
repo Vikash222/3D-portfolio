@@ -50,7 +50,7 @@ export default function Navbar({
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-600 to-red-500 p-[2px] shadow-md shadow-red-500/30 group-hover:shadow-red-500/60 transition-all duration-300 shrink-0">
             <div className="w-full h-full bg-[#12070b] rounded-[14px] overflow-hidden flex items-center justify-center">
               <img
-                src={profile?.avatar_url || profile?.hero_image_url || '/assets/vikash-hero.jpg'}
+                src={profile?.avatar_url || profile?.hero_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'VK')}&background=0D8B93&color=fff`}
                 alt={profile?.name || 'Vikash Kumar'}
                 className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
                 onError={(e) => {

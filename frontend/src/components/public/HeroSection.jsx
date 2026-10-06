@@ -1,9 +1,8 @@
 import React from 'react';
 import { Download, Sparkles, ArrowRight, ShieldCheck, Terminal } from 'lucide-react';
-import profileImg from '../../assets/vikash-hero.jpg';
 import { getAssetUrl } from '../../lib/utils';
-
 export default function HeroSection({ profile, isLoading = false }) {
+  const fallbackImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'VK')}&background=0D8B93&color=fff&size=512`;
   const hero = profile?.hero_settings || {};
   const primaryColor = profile?.theme_settings?.primary_color || '#DDA75B';
   const accentColor = profile?.theme_settings?.accent_color || '#8A9A86';
@@ -83,12 +82,12 @@ export default function HeroSection({ profile, isLoading = false }) {
                 </div>
               )}
               <img
-                src={getAssetUrl(profile?.profile_image_url, profileImg)}
+                src={getAssetUrl(profile?.profile_image_url, fallbackImg)}
                 alt={profile?.name || 'Vikash Kumar'}
                 className={`w-full h-full object-cover transition-all duration-700 ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 group-hover:scale-105'}`}
                 onError={(e) => {
-                  if (e.currentTarget.src !== profileImg) {
-                    e.currentTarget.src = profileImg;
+                  if (e.currentTarget.src !== fallbackImg) {
+                    e.currentTarget.src = fallbackImg;
                   }
                 }}
               />
