@@ -3,7 +3,7 @@ import { Download, Sparkles, ArrowRight, ShieldCheck, Terminal } from 'lucide-re
 import profileImg from '../../assets/vikash-hero.jpg';
 import { getAssetUrl } from '../../lib/utils';
 
-export default function HeroSection({ profile }) {
+export default function HeroSection({ profile, isLoading = false }) {
   const hero = profile?.hero_settings || {};
   const primaryColor = profile?.theme_settings?.primary_color || '#DDA75B';
   const accentColor = profile?.theme_settings?.accent_color || '#8A9A86';
@@ -77,18 +77,23 @@ export default function HeroSection({ profile }) {
           {/* Right Content: Portrait */}
           <div className="flex-1 w-full max-w-md relative">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-2xl border border-slate-700/80 bg-slate-900 group">
+              {isLoading && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm">
+                  <div className="w-10 h-10 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
               <img
                 src={getAssetUrl(profile?.profile_image_url, profileImg)}
                 alt={profile?.name || 'Vikash Kumar'}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className={`w-full h-full object-cover transition-all duration-700 ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 group-hover:scale-105'}`}
                 onError={(e) => {
                   if (e.currentTarget.src !== profileImg) {
                     e.currentTarget.src = profileImg;
                   }
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent opacity-60" />
-              <div className="absolute bottom-4 left-4 right-4 p-3 rounded-xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 flex items-center justify-between">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent opacity-60 z-10" />
+              <div className={`absolute bottom-4 left-4 right-4 p-3 rounded-xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 flex items-center justify-between z-10 transition-all duration-700 delay-100 ${isLoading ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
                 <div>
                   <span className="text-xs font-bold text-white block">{profile?.name || 'Vikash Kumar'}</span>
                   <span className="text-[10px] text-emerald-400 font-mono">{profile?.availability_status || 'Open for Opportunities'}</span>

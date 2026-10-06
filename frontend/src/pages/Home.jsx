@@ -69,6 +69,7 @@ const initialPortfolioState = {
 
 export default function Home() {
   const [data, setData] = useState(initialPortfolioState);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // 1. Fetch dynamic portfolio bundle
@@ -98,6 +99,9 @@ export default function Home() {
       })
       .catch((err) => {
         console.warn('Portfolio API sync notice (running on fallback):', err?.message || err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     // 2. Track anonymous page impression
@@ -145,7 +149,7 @@ export default function Home() {
         {sortedSections.map((sec) => {
           switch (sec.id) {
             case 'hero':
-              return <HeroSection key="hero" profile={profile} />;
+              return <HeroSection key="hero" profile={profile} isLoading={isLoading} />;
             case 'about':
               return <AboutSection key="about" profile={profile} educations={data?.educations} />;
             case 'skills':
