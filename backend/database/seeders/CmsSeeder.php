@@ -274,31 +274,8 @@ class CmsSeeder extends Seeder {
             Achievement::updateOrCreate(['title' => $ach['title']], $ach);
         }
 
-        // 8. Testimonials
-        $testimonials = [
-            [
-                'name' => 'Alexander Wright',
-                'designation' => 'Technical Lead',
-                'company' => 'Nexis Systems',
-                'avatar_url' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-                'content' => 'Vikash is an outstanding full-stack engineer. He delivered our headless backend architecture ahead of schedule with flawless documentation and zero regressions.',
-                'rating' => 5,
-                'is_approved' => true,
-                'is_featured' => true,
-                'is_published' => true,
-            ],
-            [
-                'name' => 'Sarah Chen',
-                'designation' => 'Founder & CEO',
-                'company' => 'Orbit Technologies',
-                'avatar_url' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80',
-                'content' => 'His deep understanding of React 19 and modern CSS transformed our web application into an intuitive, blazingly fast product.',
-                'rating' => 5,
-                'is_approved' => true,
-                'is_featured' => true,
-                'is_published' => true,
-            ],
-        ];
+        // 8. Testimonials (Kept clean for authentic client and peer reviews)
+        $testimonials = [];
         foreach ($testimonials as $t) {
             Testimonial::updateOrCreate(['name' => $t['name']], $t);
         }
@@ -331,46 +308,13 @@ class CmsSeeder extends Seeder {
         // 11. Initial Admin Notifications
         AdminNotification::create([
             'title' => 'Admin CMS Initialized',
-            'message' => 'High-Tech Portfolio Admin Dashboard is live and linked with database.',
+            'message' => 'Portfolio Admin Dashboard is live and linked with database.',
             'type' => 'system',
             'link' => '/admin',
             'is_read' => false
         ]);
-        AdminNotification::create([
-            'title' => 'New Contact Form Submission',
-            'message' => 'Sarah Jenkins sent an inquiry regarding a Summer 2025 contract.',
-            'type' => 'message',
-            'link' => '/admin/messages',
-            'is_read' => false
-        ]);
 
-        // 12. Initial Messages
-        Message::updateOrCreate(
-            ['email' => 'sarah.jenkins@techventures.io'],
-            [
-                'name' => 'Sarah Jenkins',
-                'phone' => '+1 (555) 234-5678',
-                'subject' => 'Senior Frontend / Full-Stack Contract Opportunity',
-                'message' => 'Hi Vikash! I was extremely impressed by your LoopSense AI Telemetry project. We have a distributed monitoring initiative launching soon and would love to discuss having you on board.',
-                'is_read' => false,
-                'status' => 'new',
-                'ip_address' => '192.168.1.104',
-                'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-            ]
-        );
-        Message::updateOrCreate(
-            ['email' => 'rahul.sharma@innovate.in'],
-            [
-                'name' => 'Rahul Sharma',
-                'phone' => '+91 98112 34567',
-                'subject' => 'AI Model Integration Consultation',
-                'message' => 'Hello Vikash, looking to integrate local inference models into our existing Laravel platform. Could you share your availability for a quick consultation call this week?',
-                'is_read' => true,
-                'status' => 'read',
-                'ip_address' => '142.250.190.46',
-                'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            ]
-        );
+        // 12. Messages table kept clean for real user inquiries (No mock messages)
 
         // 13. Activity Logs
         ActivityLog::create([

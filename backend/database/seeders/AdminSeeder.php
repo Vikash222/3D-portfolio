@@ -6,11 +6,13 @@ use App\Models\Profile;
 use Illuminate\Support\Facades\Hash;
 class AdminSeeder extends Seeder {
     public function run() {
+        $email = env('ADMIN_EMAIL', 'emails.vikash@gmail.com');
+        $password = env('ADMIN_PASSWORD', 'A#IKGptu@2007');
         User::updateOrCreate(
-            ['email' => 'admin@mrvikash.in'],
+            ['email' => $email],
             [
                 'name' => 'Vikash Kumar',
-                'password' => Hash::make('Admin@123'),
+                'password' => Hash::make($password),
                 'role' => 'admin'
             ]
         );
