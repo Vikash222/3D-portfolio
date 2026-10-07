@@ -27,7 +27,14 @@ axiosClient.interceptors.request.use((config) => {
 });
 
 axiosClient.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    if (res.config?.method && res.config.method.toLowerCase() !== 'get') {
+      try {
+        localStorage.removeItem('portfolio_bundle_cache');
+      } catch (e) {}
+    }
+    return res;
+  },
   (err) => {
     if (err.response?.status === 401) {
       useAuthStore.getState().logout();

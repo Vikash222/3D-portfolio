@@ -67,9 +67,23 @@ const initialPortfolioState = {
   ],
 };
 
+const CACHE_KEY = 'portfolio_bundle_cache';
+
+const getCachedPortfolio = () => {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (err) {
+    console.warn('Failed to parse cached portfolio:', err);
+  }
+  return null;
+};
+
 export default function Home() {
-  const [data, setData] = useState(initialPortfolioState);
-  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(() => getCachedPortfolio());
+  const [isLoading, setIsLoading] = useState(!data);
 
   useEffect(() => {
     // 1. Fetch dynamic portfolio bundle
@@ -77,12 +91,18 @@ export default function Home() {
       .then((res) => {
         const bundle = res.data?.data;
         if (bundle) {
-          setData((prev) => ({
-            ...prev,
-            ...bundle,
-            profile: { ...prev.profile, ...(bundle.profile || {}) },
-            sections_config: bundle.sections_config || prev.sections_config,
-          }));
+          setData((prev) => {
+            const merged = {
+              ...(prev || initialPortfolioState),
+              ...bundle,
+              profile: { ...(prev?.profile || initialPortfolioState.profile), ...(bundle.profile || {}) },
+              sections_config: bundle.sections_config || prev?.sections_config || initialPortfolioState.sections_config,
+            };
+            try {
+              localStorage.setItem(CACHE_KEY, JSON.stringify(merged));
+            } catch (e) {}
+            return merged;
+          });
 
           // Update document title and SEO tags
           if (bundle.profile?.seo_settings?.meta_title) {
@@ -99,6 +119,7 @@ export default function Home() {
       })
       .catch((err) => {
         console.warn('Portfolio API sync notice (running on fallback):', err?.message || err);
+        setData((prev) => prev || initialPortfolioState);
       })
       .finally(() => {
         setIsLoading(false);
@@ -110,6 +131,20 @@ export default function Home() {
       event_type: 'pageview',
     }).catch(() => {});
   }, []);
+
+  // First-load protection: If fetching for the very first time and no cache exists, show sleek loader to prevent flash of default mock data
+  if (isLoading && !data) {
+    return (
+      <div className="min-h-screen bg-[#121214] flex flex-col items-center justify-center text-white">
+        <div className="relative flex items-center justify-center">
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center animate-pulse shadow-lg shadow-amber-500/5">
+            <span className="font-serif font-bold text-xl text-amber-400">VK</span>
+          </div>
+          <div className="absolute inset-0 rounded-2xl border border-amber-500/30 animate-ping opacity-25" />
+        </div>
+      </div>
+    );
+  }
 
   // Handle Maintenance Mode
   const isMaintenance = data?.site_settings?.maintenance_mode;

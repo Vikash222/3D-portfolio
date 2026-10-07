@@ -37,3 +37,6 @@ android/build/
 android/app/build/
 android/local.properties
 dist-android/
+
+# Scratch/test scripts
+backend/test*.php
